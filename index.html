@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@100;300;400;500;700;800;900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+      body {
+        font-family: "M PLUS Rounded 1c", sans-serif;
+        font-weight: 500;
+        font-style: normal;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-image: url("purple_kirakira.png");
+        background-repeat: repeat;
+        background-size: 7rem;
+      }
+
+      h2 {
+        color: #ffffff;
+        font-size: 2em;
+        margin-bottom: 10px;
+      }
+
+      p {
+        color: #ffffff;
+        font-size: 1.2em;
+        margin: 10px 0;
+      }
+
+      input[type="number"] {
+        padding: 10px;
+        margin: 10px 0;
+        border: 2px solid #bdc3c7;
+        border-radius: 5px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+        box-shadow: 2px 2px 10px black;
+      }
+
+      input[type="number"]:focus {
+        border-color: #2980b9;
+        outline: none;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-family: "M PLUS Rounded 1c", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        margin: 10px 5px;
+        background: #e60182;
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.2s;
+      }
+
+      button:hover {
+        background: #b10065;
+        transform: scale(1.05);
+      }
+
+      #message {
+        color: #ffde0a;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      #score {
+        color: #d0f2ff;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      .crop {
+        width: 100%;
+        max-width: 600px;
+        overflow: hidden;
+        margin: 20px 0;
+        border: 5px solid #ecf0f1;
+        border-radius: 10px;
+        transition: height 0.5s ease;
+      }
+
+      .crop img {
+        width: 100%;
+        display: block;
+        transition: transform 0.5s ease;
+      }
+
+      .crop img:hover {
+        transform: scale(1.05);
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <h2>Guess The Chapter!</h2>
+    <p>Entrez votre réponse :</p>
+    <input type="number" id="chapter" name="chapter" />
+    <button onclick="submitAnswer()">Soumettre</button>
+    <button onclick="nextImage()">Suivant</button>
+
+    <p id="message"></p>
+    <p id="score">Score : 0</p>
+    <div class="crop" style="height: 190px">
+      <img id="randomMangaPage" src="" alt="Random manga page" />
+    </div>
+    <button onclick="openChapter()">Lire le chapitre</button>
+    <script>
+      var tries = 0;
+      var score = 0;
+      var correctChapter = -1;
+
+      function loadImage() {
+        correctChapter = Math.floor(Math.random() * 121) + 1;
+        var randomPage = Math.floor(Math.random() * 18) + 1;
+        var imageUrl = `https://anime-sama.fr/s2/scans/Oshi%20No%20Ko/${correctChapter}/${randomPage}.jpg`;
+        $("#randomMangaPage").attr("src", imageUrl);
+        $("#message").text(""); // Clear message
+      }
+
+      function adjustCropHeight() {
+        var img = document.getElementById("randomMangaPage");
+        var height = 190;
+        if (height) {
+          $(".crop").height(height);
+        } else {
+          img.onload = function () {
+            $(".crop").height(190);
+          };
+        }
+      }
+
+      function submitAnswer() {
+        var guessedChapter = $("#chapter").val();
+        if (guessedChapter == correctChapter) {
+          adjustCropHeight();
+          score++;
+          $("#message").text("Bravo ! Vous avez deviné correctement !");
+          $("#score").text("Score : " + score);
+          tries = 0;
+        } else {
+          tries++;
+          if (tries < 5) {
+            $("#message").text(
+              "Désolé, ce n'est pas le chapitre " +
+                guessedChapter +
+                ". Essayez encore !"
+            );
+            $(".crop").height(tries * 220);
+          } else {
+            $("#message").text(
+              "Désolé, la bonne réponse était le chapitre " +
+                correctChapter +
+                "."
+            );
+            $(".crop").height(900);
+            correctChapter = -1; // reset
+            tries = 0;
+          }
+        }
+      }
+
+      function openChapter() {
+        window.open(
+          `https://cubari.moe/read/gist/cmF3L0ltU2FrdXNoaS9Pc2hpTm9Lb0ZSL21hc3Rlci9Pc2hpTm9Lby5qc29u/${correctChapter}/1/`,
+          "_blank"
+        );
+      }
+
+      function nextImage() {
+        $(".crop").height(190);
+        tries = 0;
+        loadImage();
+      }
+
+      $(document).ready(function () {
+        loadImage();
+        setTimeout(adjustCropHeight, 500); // Wait a bit for the image to load
+      });
+    </script>
+  </body>
+</html>
