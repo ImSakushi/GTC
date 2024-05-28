@@ -139,31 +139,38 @@
       }
 
       function submitAnswer() {
-        var guessedChapter = $("#chapter").val();
-        if (guessedChapter == correctChapter) {
-          adjustCropHeight();
-          score++;
-          $("#message").text("Bravo ! Vous avez deviné correctement !");
-          $("#score").text("Score : " + score);
-          tries = 0;
+        lose = 0;
+        if (lose == 1) {
+          nextImage();
         } else {
-          tries++;
-          if (tries < 5) {
-            $("#message").text(
-              "Désolé, ce n'est pas le chapitre " +
-                guessedChapter +
-                ". Essayez encore !"
-            );
-            $(".crop").height(tries * 220);
-          } else {
-            $("#message").text(
-              "Désolé, la bonne réponse était le chapitre " +
-                correctChapter +
-                "."
-            );
-            $(".crop").height(900);
-            correctChapter = -1; // reset
+          var guessedChapter = $("#chapter").val();
+          if (guessedChapter == correctChapter) {
+            adjustCropHeight();
+            score++;
+            $("#message").text("Bravo ! Vous avez deviné correctement !");
+            $("#score").text("Score : " + score);
+            $(".crop").height(875);
             tries = 0;
+          } else {
+            tries++;
+            if (tries < 5) {
+              console.log(lose);
+              $("#message").text(
+                "Désolé, ce n'est pas le chapitre " +
+                  guessedChapter +
+                  ". Essayez encore !"
+              );
+              $(".crop").height(tries * 220);
+            } else {
+              $("#message").text(
+                "Désolé, la bonne réponse était le chapitre " +
+                  correctChapter +
+                  "."
+              );
+              $(".crop").height(900);
+              lose = 1;
+              console.log(lose);
+            }
           }
         }
       }
